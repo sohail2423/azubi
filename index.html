@@ -1,73 +1,134 @@
 <!DOCTYPE html>
-<html lang="tr">
+<html lang="de">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uygulama</title>
+  <title>Ausbildungsbericht Generator</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       font-family: Arial, sans-serif;
-      margin: 20px;
-      padding: 0;
-      background-color: #f4f4f9;
+    }
+    body {
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 20px;
     }
     .container {
-      max-width: 600px;
+      max-width: 800px;
       margin: 0 auto;
-      background: white;
-      padding: 20px;
+      background: #ffffff;
+      padding: 25px;
       border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    input, button {
+    h1 {
+      color: #333;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+      color: #555;
+    }
+    input[type="text"], input[type="date"], textarea {
       width: 100%;
       padding: 10px;
-      margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
-      box-sizing: border-box;
+      font-size: 14px;
+    }
+    textarea {
+      resize: vertical;
+      min-height: 100px;
     }
     button {
-      background-color: #007bff;
+      width: 100%;
+      background-color: #0056b3;
       color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
       font-weight: bold;
+      border-radius: 4px;
       cursor: pointer;
+      margin-top: 10px;
     }
     button:hover {
-      background-color: #0056b3;
+      background-color: #003d82;
     }
-    #result {
-      margin-top: 20px;
-      padding: 10px;
-      background-color: #e9ecef;
-      border-radius: 4px;
+    .output-group {
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 2px solid #eee;
     }
   </style>
 </head>
 <body>
 
   <div class="container">
-    <h2>Basit Web Uygulaması</h2>
-    <p>Aşağıya bir metin yazın:</p>
+    <h1>Ausbildungsbericht Generator</h1>
     
-    <input type="text" id="userInput" placeholder="Mesajınızı girin...">
-    <button onclick="processInput()">Gönder</button>
+    <div class="form-group">
+      <label for="azubiName">Name des Auszubildenden:</label>
+      <input type="text" id="azubiName" placeholder="Max Mustermann">
+    </div>
 
-    <div id="result">Sonuç burada görünecek.</div>
+    <div class="form-group">
+      <label for="reportDate">Datum / Woche:</label>
+      <input type="text" id="reportDate" placeholder="01.09.2026 - 05.09.2026">
+    </div>
+
+    <div class="form-group">
+      <label for="department">Abteilung / Bereich:</label>
+      <input type="text" id="department" placeholder="z.B. IT-Support / Entwicklung">
+    </div>
+
+    <div class="form-group">
+      <label for="tasks">Ausgeführte Tätigkeiten / Stichpunkte:</label>
+      <textarea id="tasks" placeholder="- Stichpunkte der Woche hier eingeben..."></textarea>
+    </div>
+
+    <button onclick="generateReport()">Bericht Erstellen</button>
+
+    <div class="output-group">
+      <label for="reportOutput">Fertiger Ausbildungsbericht:</label>
+      <textarea id="reportOutput" rows="12" placeholder="Ihr erstellter Bericht erscheint hier..."></textarea>
+    </div>
   </div>
 
   <script>
-    function processInput() {
-      const input = document.getElementById('userInput').value;
-      const resultDiv = document.getElementById('result');
+    function generateReport() {
+      const name = document.getElementById('azubiName').value.trim();
+      const date = document.getElementById('reportDate').value.trim();
+      const dept = document.getElementById('department').value.trim();
+      const tasks = document.getElementById('tasks').value.trim();
+      const output = document.getElementById('reportOutput');
 
-      if (input.trim() === "") {
-        resultDiv.innerText = "Lütfen bir metin girin!";
+      if (!tasks) {
+        alert("Bitte geben Sie die ausgeführten Tätigkeiten ein!");
         return;
       }
 
-      // Normal JavaScript mantığı (Örn: Giren metni büyük harfe çevirme)
-      resultDiv.innerText = "Girdiğiniz metin: " + input.toUpperCase();
+      // Formatierter Bericht ohne API / KI
+      let formattedReport = `AUSBILDUNGSBERICHT\n`;
+      formattedReport += `===================\n`;
+      if (name) formattedReport += `Name: ${name}\n`;
+      if (date) formattedReport += `Zeitraum: ${date}\n`;
+      if (dept) formattedReport += `Abteilung: ${dept}\n`;
+      formattedReport += `\nAusgeführte Tätigkeiten:\n`;
+      formattedReport += `------------------------\n`;
+      formattedReport += `${tasks}\n\n`;
+      formattedReport += `Datum: ${new Date().toLocaleDateString('de-DE')}\n`;
+      formattedReport += `Unterschrift Auszubildender: _______________\n`;
+      formattedReport += `Unterschrift Ausbilder:     _______________`;
+
+      output.value = formattedReport;
     }
   </script>
 
