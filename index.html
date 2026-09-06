@@ -3,65 +3,178 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ausbildung Berichtsheft</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <title>V-Baumarkt Ausbildungsnachweis</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f4f4f9; }
-    h2 { color: #333; text-align: center; }
-    label { display: block; margin-top: 10px; font-weight: bold; }
-    input, textarea { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    button { width: 100%; margin-top: 20px; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
-    button:hover { background-color: #218838; }
+    body { font-family: Arial, sans-serif; padding: 15px; max-width: 700px; margin: auto; background-color: #f4f4f9; }
+    .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    h2 { text-align: center; color: #0056b3; margin-bottom: 20px; }
+    label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
+    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    .row { display: flex; gap: 10px; }
+    .col { flex: 1; }
+    button { width: 100%; padding: 12px; margin-top: 20px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    button:hover { background-color: #d35400; }
+    
+    /* Druck-Layout */
+    @media print {
+      body { background-color: white; padding: 0; }
+      .form-container, button { display: none; }
+      .print-page { display: block !important; }
+    }
+    .print-page { display: none; background: white; font-family: "Calibri", sans-serif; font-size: 12px; line-height: 1.3; }
+    .sheet-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
+    .sheet-table th, .sheet-table td { border: 1px solid #000; padding: 5px; vertical-align: top; }
+    .header-logo { font-size: 24px; font-weight: bold; color: #e67e22; text-align: right; }
+    .header-logo span { color: #007bff; }
+    .title-box { text-align: center; font-weight: bold; font-size: 16px; background-color: #f0f0f0; }
   </style>
 </head>
 <body>
-  <h2>Ausbildungsnachweis</h2>
-  <label for="name">Name, Vorname:</label>
-  <input type="text" id="name" placeholder="Max Mustermann">
 
-  <label for="date">Woche vom / bis:</label>
-  <input type="text" id="date" placeholder="01.09.2026 - 05.09.2026">
+<div class="form-container">
+  <h2>V-Baumarkt Berichtsheft</h2>
+  
+  <div class="row">
+    <div class="col">
+      <label>Name:</label>
+      <input type="text" id="in_name" value="Panahi, Sohail">
+    </div>
+    <div class="col">
+      <label>Ausbildungsnachweis Nr.:</label>
+      <input type="text" id="in_nr" placeholder="03">
+    </div>
+  </div>
 
-  <label for="tasks">Betriebliche Tätigkeiten (İş yerinde yapılanlar):</label>
-  <textarea id="tasks" rows="5" placeholder="- Yapılan işleri buraya yazın..."></textarea>
+  <div class="row">
+    <div class="col">
+      <label>Ausbildungsjahr:</label>
+      <input type="text" id="in_jahr" placeholder="1">
+    </div>
+    <div class="col">
+      <label>Woche:</label>
+      <input type="text" id="in_woche" placeholder="33">
+    </div>
+  </div>
 
-  <label for="school">Schulische Inhalte (Okul dersleri):</label>
-  <textarea id="school" rows="4" placeholder="- Okulda işlenen konular..."></textarea>
+  <div class="row">
+    <div class="col">
+      <label>Vom:</label>
+      <input type="text" id="in_vom" placeholder="17.08.26">
+    </div>
+    <div class="col">
+      <label>Bis:</label>
+      <input type="text" id="in_bis" placeholder="22.08.26">
+    </div>
+  </div>
 
-  <button onclick="generatePDF()">PDF Erstellen & Herunterladen</button>
+  <label>Ausbildungsabteilung:</label>
+  <input type="text" id="in_abt" value="Werkzeug">
 
-  <script>
-    function generatePDF() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
+  <label>Betriebliche Tätigkeit:</label>
+  <textarea id="in_taetigkeit" rows="4" placeholder="- Waren eingeräumt&#10;- Preis überprüft..."></textarea>
 
-      const name = document.getElementById('name').value;
-      const date = document.getElementById('date').value;
-      const tasks = document.getElementById('tasks').value;
-      const school = document.getElementById('school').value;
+  <label>Beschreibung eines Arbeitsvorganges dieser Woche:</label>
+  <textarea id="in_beschreibung" rows="5" placeholder="Ich habe einen Schlüssel nach einer Vorlage angefertigt..."></textarea>
 
-      doc.setFontSize(16);
-      doc.text("AUSBILDUNGSNACHWEIS", 105, 20, null, null, "center");
+  <label>Berufsschule (Themen des Unterrichts):</label>
+  <textarea id="in_schule" rows="2" placeholder="Schulferien"></textarea>
 
-      doc.setFontSize(12);
-      doc.text(`Name: ${name}`, 20, 40);
-      doc.text(`Datum: ${date}`, 20, 50);
+  <div class="row">
+    <div class="col">
+      <label>Gesamtstunden:</label>
+      <input type="text" id="in_std" value="40">
+    </div>
+  </div>
 
-      doc.text("Betriebliche Tätigkeiten:", 20, 70);
-      doc.setFontSize(10);
-      const splitTasks = doc.splitTextToSize(tasks || "-", 170);
-      doc.text(splitTasks, 20, 80);
+  <button onclick="printSheet()">DRUCKEN / ALS PDF SPEICHERN</button>
+</div>
 
-      let currentY = 80 + (splitTasks.length * 7);
+<!-- DRUCK TEMPLATE (V-BAUMARKT BİREBİR ŞABLON) -->
+<div id="printArea" class="print-page">
+  <table class="sheet-table">
+    <tr>
+      <td colspan="2">
+        <b>Name:</b> <span id="out_name"></span><br>
+        <b>Ausbildungsjahr:</b> <span id="out_jahr"></span>
+      </td>
+      <td colspan="2" class="title-box">
+        Ausbildungsnachweis Nr. <span id="out_nr"></span>
+      </td>
+      <td colspan="2" class="header-logo">
+        <span>V-</span>BAUMARKT
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2">
+        <b>Woche:</b> <span id="out_woche"></span>
+      </td>
+      <td colspan="2">
+        <b>vom:</b> <span id="out_vom"></span> <b>bis:</b> <span id="out_bis"></span>
+      </td>
+      <td colspan="2">
+        <b>Ausbildungsabteilung:</b><br>
+        V-Baumarkt II GmbH & Co.KG Füssen<br>
+        <span id="out_abt"></span>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="5" style="background-color: #f0f0f0;"><b>Betriebliche Tätigkeit:</b></td>
+      <td style="width: 50px; background-color: #f0f0f0;"><b>Std.</b></td>
+    </tr>
+    <tr style="height: 120px;">
+      <td colspan="5" id="out_taetigkeit" style="white-space: pre-line;"></td>
+      <td></td>
+    </tr>
+    <tr>
+      <td colspan="6" style="background-color: #f0f0f0;"><b>Beschreibung eines Arbeitsvorganges dieser Woche:</b></td>
+    </tr>
+    <tr style="height: 150px;">
+      <td colspan="6" id="out_beschreibung" style="white-space: pre-line;"></td>
+    </tr>
+    <tr>
+      <td colspan="6" style="background-color: #f0f0f0;"><b>Berufsschule (Themen des Unterrichts):</b></td>
+    </tr>
+    <tr style="height: 60px;">
+      <td colspan="5" id="out_schule" style="white-space: pre-line;"></td>
+      <td><b>Gesamtstunden:</b><br><span id="out_std"></span></td>
+    </tr>
+    <tr>
+      <td colspan="2">Für die Richtigkeit</td>
+      <td><b>Datum</b></td>
+      <td><b>Auszubildender</b></td>
+      <td><b>Datum</b></td>
+      <td><b>Ausbilder</b></td>
+    </tr>
+    <tr style="height: 40px;">
+      <td colspan="2"></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </table>
+</div>
 
-      doc.setFontSize(12);
-      doc.text("Schulische Inhalte:", 20, currentY + 10);
-      doc.setFontSize(10);
-      const splitSchool = doc.splitTextToSize(school || "-", 170);
-      doc.text(splitSchool, 20, currentY + 20);
+<script>
+  function printSheet() {
+    // Form verilerini oku ve tabloya yerleştir
+    document.getElementById('out_name').innerText = document.getElementById('in_name').value;
+    document.getElementById('out_nr').innerText = document.getElementById('in_nr').value;
+    document.getElementById('out_jahr').innerText = document.getElementById('in_jahr').value;
+    document.getElementById('out_woche').innerText = document.getElementById('in_woche').value;
+    document.getElementById('out_vom').innerText = document.getElementById('in_vom').value;
+    document.getElementById('out_bis').innerText = document.getElementById('in_bis').value;
+    document.getElementById('out_abt').innerText = document.getElementById('in_abt').value;
+    document.getElementById('out_taetigkeit').innerText = document.getElementById('in_taetigkeit').value;
+    document.getElementById('out_beschreibung').innerText = document.getElementById('in_beschreibung').value;
+    document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
+    document.getElementById('out_std').innerText = document.getElementById('in_std').value;
 
-      doc.save(`Berichtsheft_${date.replace(/ /g, "_")}.pdf`);
-    }
-  </script>
+    // Sayfayı yazdır / PDF olarak kaydet
+    window.print();
+  }
+</script>
+
 </body>
 </html>
+
