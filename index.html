@@ -1,226 +1,75 @@
 <!DOCTYPE html>
-<html lang="de">
+<html lang="tr">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V-Baumarkt Ausbildungsnachweis mit Gemini AI</title>
+  <title>Uygulama</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 15px; max-width: 700px; margin: auto; background-color: #f4f4f9; }
-    .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #0056b3; margin-bottom: 20px; }
-    label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
-    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .row { display: flex; gap: 10px; }
-    .col { flex: 1; }
-    .btn-print { width: 100%; padding: 12px; margin-top: 20px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    .btn-ai { width: 100%; padding: 10px; margin-top: 10px; background-color: #4285f4; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; }
-    
-    /* Druck-Layout */
-    @media print {
-      body { background-color: white; padding: 0; }
-      .form-container { display: none; }
-      .print-page { display: block !important; }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      background-color: #f4f4f9;
     }
-    .print-page { display: none; background: white; font-family: "Calibri", sans-serif; font-size: 12px; line-height: 1.3; }
-    .sheet-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-    .sheet-table th, .sheet-table td { border: 1px solid #000; padding: 5px; vertical-align: top; }
-    .header-logo { font-size: 24px; font-weight: bold; color: #e67e22; text-align: right; }
-    .header-logo span { color: #007bff; }
-    .title-box { text-align: center; font-weight: bold; font-size: 16px; background-color: #f0f0f0; }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    #result {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #e9ecef;
+      border-radius: 4px;
+    }
   </style>
 </head>
 <body>
 
-<div class="form-container">
-  <h2>V-Baumarkt Berichtsheft</h2>
-  
-  <div class="row">
-    <div class="col">
-      <label>Name:</label>
-      <input type="text" id="in_name" value="Panahi, Sohail">
-    </div>
-    <div class="col">
-      <label>Ausbildungsnachweis Nr.:</label>
-      <input type="text" id="in_nr" placeholder="03">
-    </div>
+  <div class="container">
+    <h2>Basit Web Uygulaması</h2>
+    <p>Aşağıya bir metin yazın:</p>
+    
+    <input type="text" id="userInput" placeholder="Mesajınızı girin...">
+    <button onclick="processInput()">Gönder</button>
+
+    <div id="result">Sonuç burada görünecek.</div>
   </div>
 
-  <div class="row">
-    <div class="col">
-      <label>Ausbildungsjahr:</label>
-      <input type="text" id="in_jahr" placeholder="1">
-    </div>
-    <div class="col">
-      <label>Woche:</label>
-      <input type="text" id="in_woche" placeholder="33">
-    </div>
-  </div>
+  <script>
+    function processInput() {
+      const input = document.getElementById('userInput').value;
+      const resultDiv = document.getElementById('result');
 
-  <div class="row">
-    <div class="col">
-      <label>Vom:</label>
-      <input type="text" id="in_vom" placeholder="17.08.26">
-    </div>
-    <div class="col">
-      <label>Bis:</label>
-      <input type="text" id="in_bis" placeholder="22.08.26">
-    </div>
-  </div>
+      if (input.trim() === "") {
+        resultDiv.innerText = "Lütfen bir metin girin!";
+        return;
+      }
 
-  <label>Ausbildungsabteilung:</label>
-  <input type="text" id="in_abt" value="Werkzeug">
-
-  <label>Kısa Notlarınız (AI için):</label>
-  <textarea id="in_keywords" rows="3" placeholder="Örn: Waren eingeräumt, Schlüssel gemacht, Lieferschein eintragen..."></textarea>
-  
-  <button class="btn-ai" id="aiBtn" onclick="generateWithGemini()">✨ Gemini ile Otomatik Rapor Yaz</button>
-
-  <label>Betriebliche Tätigkeit:</label>
-  <textarea id="in_taetigkeit" rows="4"></textarea>
-
-  <label>Beschreibung eines Arbeitsvorganges dieser Woche:</label>
-  <textarea id="in_beschreibung" rows="5"></textarea>
-
-  <label>Berufsschule (Themen des Unterrichts):</label>
-  <textarea id="in_schule" rows="2" placeholder="Schulferien"></textarea>
-
-  <div class="row">
-    <div class="col">
-      <label>Gesamtstunden:</label>
-      <input type="text" id="in_std" value="40">
-    </div>
-  </div>
-
-  <button class="btn-print" onclick="printSheet()">DRUCKEN / ALS PDF SPEICHERN</button>
-</div>
-
-<!-- DRUCK TEMPLATE -->
-<div id="printArea" class="print-page">
-  <table class="sheet-table">
-    <tr>
-      <td colspan="2">
-        <b>Name:</b> <span id="out_name"></span><br>
-        <b>Ausbildungsjahr:</b> <span id="out_jahr"></span>
-      </td>
-      <td colspan="2" class="title-box">
-        Ausbildungsnachweis Nr. <span id="out_nr"></span>
-      </td>
-      <td colspan="2" class="header-logo">
-        <span>V-</span>BAUMARKT
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <b>Woche:</b> <span id="out_woche"></span>
-      </td>
-      <td colspan="2">
-        <b>vom:</b> <span id="out_vom"></span> <b>bis:</b> <span id="out_bis"></span>
-      </td>
-      <td colspan="2">
-        <b>Ausbildungsabteilung:</b><br>
-        V-Baumarkt II GmbH & Co.KG Füssen<br>
-        <span id="out_abt"></span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="5" style="background-color: #f0f0f0;"><b>Betriebliche Tätigkeit:</b></td>
-      <td style="width: 50px; background-color: #f0f0f0;"><b>Std.</b></td>
-    </tr>
-    <tr style="height: 120px;">
-      <td colspan="5" id="out_taetigkeit" style="white-space: pre-line;"></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td colspan="6" style="background-color: #f0f0f0;"><b>Beschreibung eines Arbeitsvorganges dieser Woche:</b></td>
-    </tr>
-    <tr style="height: 150px;">
-      <td colspan="6" id="out_beschreibung" style="white-space: pre-line;"></td>
-    </tr>
-    <tr>
-      <td colspan="6" style="background-color: #f0f0f0;"><b>Berufsschule (Themen des Unterrichts):</b></td>
-    </tr>
-    <tr style="height: 60px;">
-      <td colspan="5" id="out_schule" style="white-space: pre-line;"></td>
-      <td><b>Gesamtstunden:</b><br><span id="out_std"></span></td>
-    </tr>
-    <tr>
-      <td colspan="2">Für die Richtigkeit</td>
-      <td><b>Datum</b></td>
-      <td><b>Auszubildender</b></td>
-      <td><b>Datum</b></td>
-      <td><b>Ausbilder</b></td>
-    </tr>
-    <tr style="height: 40px;">
-      <td colspan="2"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </table>
-</div>
-
-<script type="module">
-  import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
-  // API Anahtarınızı buraya yazın
-  const API_KEY = "AQ.Ab8RN6JZcV-hLVMFuWVQFBI2VccH0KCf734nkbc4qMPS0bznHA";
-
-  window.generateWithGemini = async function() {
-    const keywords = document.getElementById('in_keywords').value;
-    if(!keywords) {
-      alert("Lütfen önce kısaca neler yaptığınızı yazın!");
-      return;
+      // Normal JavaScript mantığı (Örn: Giren metni büyük harfe çevirme)
+      resultDiv.innerText = "Girdiğiniz metin: " + input.toUpperCase();
     }
-
-    const btn = document.getElementById('aiBtn');
-    btn.innerText = "⏳ Gemini Raporu Hazırlıyor...";
-    btn.disabled = true;
-
-    try {
-      const genAI = new GoogleGenerativeAI(API_KEY);
-      const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-      const prompt = `Ich mache eine Ausbildung bei V-Baumarkt im Einzelhandel. Hier sind meine Stichpunkte für diese Woche: ${keywords}. 
-      Bitte erstelle daraus eine JSON-Antwort auf Deutsch für mein Berichtsheft mit zwei Feldern: 
-      "taetigkeit": Eine Stichpunktliste der täglichen Aufgaben.
-      "beschreibung": Eine detaillierte Beschreibung eines Arbeitsvorgangs dieser Woche.
-      Gib NUR reines JSON zurück, ohne Markdown-Codeblöcke oder den Text json. Format: {"taetigkeit": "...", "beschreibung": "..."}`;
-
-      const result = await model.generateContent(prompt);
-      const response = await result.response;
-      let text = response.text();
-
-      text = text.replace(/```json/g, "").replace(/```/g, "").trim();
-      const parsed = JSON.parse(text);
-
-      document.getElementById('in_taetigkeit').value = parsed.taetigkeit || "";
-      document.getElementById('in_beschreibung').value = parsed.beschreibung || "";
-    } catch (e) {
-      alert("Hata oluştu: " + e.message);
-      console.error(e);
-    } finally {
-      btn.innerText = "✨ Gemini ile Otomatik Rapor Yaz";
-      btn.disabled = false;
-    }
-  }
-
-  window.printSheet = function() {
-    document.getElementById('out_name').innerText = document.getElementById('in_name').value;
-    document.getElementById('out_nr').innerText = document.getElementById('in_nr').value;
-    document.getElementById('out_jahr').innerText = document.getElementById('in_jahr').value;
-    document.getElementById('out_woche').innerText = document.getElementById('in_woche').value;
-    document.getElementById('out_vom').innerText = document.getElementById('in_vom').value;
-    document.getElementById('out_bis').innerText = document.getElementById('in_bis').value;
-    document.getElementById('out_abt').innerText = document.getElementById('in_abt').value;
-    document.getElementById('out_taetigkeit').innerText = document.getElementById('in_taetigkeit').value;
-    document.getElementById('out_beschreibung').innerText = document.getElementById('in_beschreibung').value;
-    document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
-    document.getElementById('out_std').innerText = document.getElementById('in_std').value;
-
-    window.print();
-  }
-</script>
+  </script>
 
 </body>
 </html>
