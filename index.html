@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ausbildung Berichtsheft</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; max-width: 600px; margin: auto; background-color: #f4f4f9; }
+    h2 { color: #333; text-align: center; }
+    label { display: block; margin-top: 10px; font-weight: bold; }
+    input, textarea { width: 100%; padding: 10px; margin-top: 5px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
+    button { width: 100%; margin-top: 20px; padding: 12px; background-color: #28a745; color: white; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; }
+    button:hover { background-color: #218838; }
+  </style>
+</head>
+<body>
+  <h2>Ausbildungsnachweis</h2>
+  <label for="name">Name, Vorname:</label>
+  <input type="text" id="name" placeholder="Max Mustermann">
+
+  <label for="date">Woche vom / bis:</label>
+  <input type="text" id="date" placeholder="01.09.2026 - 05.09.2026">
+
+  <label for="tasks">Betriebliche Tätigkeiten (İş yerinde yapılanlar):</label>
+  <textarea id="tasks" rows="5" placeholder="- Yapılan işleri buraya yazın..."></textarea>
+
+  <label for="school">Schulische Inhalte (Okul dersleri):</label>
+  <textarea id="school" rows="4" placeholder="- Okulda işlenen konular..."></textarea>
+
+  <button onclick="generatePDF()">PDF Erstellen & Herunterladen</button>
+
+  <script>
+    function generatePDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      const name = document.getElementById('name').value;
+      const date = document.getElementById('date').value;
+      const tasks = document.getElementById('tasks').value;
+      const school = document.getElementById('school').value;
+
+      doc.setFontSize(16);
+      doc.text("AUSBILDUNGSNACHWEIS", 105, 20, null, null, "center");
+
+      doc.setFontSize(12);
+      doc.text(`Name: ${name}`, 20, 40);
+      doc.text(`Datum: ${date}`, 20, 50);
+
+      doc.text("Betriebliche Tätigkeiten:", 20, 70);
+      doc.setFontSize(10);
+      const splitTasks = doc.splitTextToSize(tasks || "-", 170);
+      doc.text(splitTasks, 20, 80);
+
+      let currentY = 80 + (splitTasks.length * 7);
+
+      doc.setFontSize(12);
+      doc.text("Schulische Inhalte:", 20, currentY + 10);
+      doc.setFontSize(10);
+      const splitSchool = doc.splitTextToSize(school || "-", 170);
+      doc.text(splitSchool, 20, currentY + 20);
+
+      doc.save(`Berichtsheft_${date.replace(/ /g, "_")}.pdf`);
+    }
+  </script>
+</body>
+</html>
