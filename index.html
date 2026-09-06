@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V-Baumarkt Ausbildungsnachweis</title>
+  <title>V-Baumarkt Ausbildungsnachweis mit Gemini AI</title>
   <style>
     body { font-family: Arial, sans-serif; padding: 15px; max-width: 700px; margin: auto; background-color: #f4f4f9; }
     .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -12,13 +12,13 @@
     input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
     .row { display: flex; gap: 10px; }
     .col { flex: 1; }
-    button { width: 100%; padding: 12px; margin-top: 20px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    button:hover { background-color: #d35400; }
+    .btn-print { width: 100%; padding: 12px; margin-top: 20px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
+    .btn-ai { width: 100%; padding: 10px; margin-top: 10px; background-color: #4285f4; color: white; border: none; border-radius: 4px; font-size: 14px; font-weight: bold; cursor: pointer; }
     
     /* Druck-Layout */
     @media print {
       body { background-color: white; padding: 0; }
-      .form-container, button { display: none; }
+      .form-container { display: none; }
       .print-page { display: block !important; }
     }
     .print-page { display: none; background: white; font-family: "Calibri", sans-serif; font-size: 12px; line-height: 1.3; }
@@ -70,26 +70,32 @@
   <label>Ausbildungsabteilung:</label>
   <input type="text" id="in_abt" value="Werkzeug">
 
+  <label>Kısa Notlarınız (AI için):</label>
+  <textarea id="in_keywords" rows="3" placeholder="Örn: Waren eingeräumt, Schlüssel gemacht, Lieferschein eintragen..."></textarea>
+  
+  <button class="btn-ai" id="aiBtn" onclick="generateWithGemini()">✨ Gemini ile Otomatik Rapor Yaz</button>
+
   <label>Betriebliche Tätigkeit:</label>
-  <textarea id="in_taetigkeit" rows="4" placeholder="- Waren eingeräumt&#10;- Preis überprüft..."></textarea>
+  <textarea id="in_taetigkeit" rows="4"></textarea>
 
   <label>Beschreibung eines Arbeitsvorganges dieser Woche:</label>
-  <textarea id="in_beschreibung" rows="5" placeholder="Ich habe einen Schlüssel nach einer Vorlage angefertigt..."></textarea>
+  <textarea id="in_beschreibung" rows="5"></textarea>
 
   <label>Berufsschule (Themen des Unterrichts):</label>
   <textarea id="in_schule" rows="2" placeholder="Schulferien"></textarea>
 
   <div class="row">
     <div class="col">
-      <label>Gesamtstunden:</label>
+      const GEMINI_API_KEY = "AQ.Ab8RN6JZcV-hLVMFuWVQFBI2VccH0KCf734nkbc4qMPS0bznHA";
+
       <input type="text" id="in_std" value="40">
     </div>
   </div>
 
-  <button onclick="printSheet()">DRUCKEN / ALS PDF SPEICHERN</button>
+  <button class="btn-print" onclick="printSheet()">DRUCKEN / ALS PDF SPEICHERN</button>
 </div>
 
-<!-- DRUCK TEMPLATE (V-BAUMARKT BİREBİR ŞABLON) -->
+<!-- DRUCK TEMPLATE -->
 <div id="printArea" class="print-page">
   <table class="sheet-table">
     <tr>
@@ -156,8 +162,51 @@
 </div>
 
 <script>
+  const GEMINI_API_KEY = "BURAYA_GEMINI_API_KEYINIZI_YAZIN";
+
+  async function generateWithGemini() {
+    const keywords = document.getElementById('in_keywords').value;
+    if(!keywords) {
+      alert("Lütfen önce kısaca neler yaptığınızı yazın!");
+      return;
+    }
+
+    const btn = document.getElementById('aiBtn');
+    btn.innerText = "⏳ Gemini Raporu Hazırlıyor...";
+    btn.disabled = true;
+
+    const prompt = `Ich mache eine Ausbildung bei V-Baumarkt im Einzelhandel. Hier sind meine Stichpunkte für diese Woche: ${keywords}. 
+    Bitte erstelle daraus eine JSON-Antwort auf Deutsch für mein Berichtsheft mit zwei Feldern: 
+    1. "taetigkeit": Eine Stichpunktliste der täglichen Aufgaben (Betriebliche Tätigkeit).
+    2. "beschreibung": Eine detaillierte Beschreibung eines Arbeitsvorgangs dieser Woche (Beschreibung eines Arbeitsvorganges).
+    Gib NUR reines JSON zurück, ohne Markdown-Codeblöcke!`;
+
+    try {
+      const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }]
+        })
+      });
+
+      const data = await response.json();
+      let textResponse = data.candidates[0].content.parts[0].text;
+      textResponse = textResponse.replace(/```json/g, "").replace(/```/g, "").trim();
+      
+      const parsed = JSON.parse(textResponse);
+      document.getElementById('in_taetigkeit').value = parsed.taetigkeit || "";
+      document.getElementById('in_beschreibung').value = parsed.beschreibung || "";
+    } catch (e) {
+      alert("Yapay zeka yanıt oluştururken bir hata oluştu. API keyinizi kontrol edin.");
+      console.error(e);
+    } finally {
+      btn.innerText = "✨ Gemini ile Otomatik Rapor Yaz";
+      btn.disabled = false;
+    }
+  }
+
   function printSheet() {
-    // Form verilerini oku ve tabloya yerleştir
     document.getElementById('out_name').innerText = document.getElementById('in_name').value;
     document.getElementById('out_nr').innerText = document.getElementById('in_nr').value;
     document.getElementById('out_jahr').innerText = document.getElementById('in_jahr').value;
@@ -170,11 +219,9 @@
     document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
     document.getElementById('out_std').innerText = document.getElementById('in_std').value;
 
-    // Sayfayı yazdır / PDF olarak kaydet
     window.print();
   }
 </script>
 
 </body>
 </html>
-
