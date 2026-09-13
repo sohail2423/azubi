@@ -3,177 +3,286 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>V-Baumarkt Ausbildungsnachweis</title>
+  <title>Ausbildungsnachweis - V-Baumarkt</title>
   <style>
-    body { font-family: Arial, sans-serif; padding: 15px; max-width: 700px; margin: auto; background-color: #f4f4f9; }
-    .form-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    h2 { text-align: center; color: #0056b3; margin-bottom: 20px; }
-    label { font-weight: bold; display: block; margin-top: 10px; font-size: 14px; }
-    input, textarea { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-    .row { display: flex; gap: 10px; }
-    .col { flex: 1; }
-    button { width: 100%; padding: 12px; margin-top: 20px; background-color: #e67e22; color: white; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; }
-    button:hover { background-color: #d35400; }
+    * { box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { background-color: #eef2f5; padding: 20px; margin: 0; }
     
-    /* Druck-Layout */
-    @media print {
-      body { background-color: white; padding: 0; }
-      .form-container, button { display: none; }
-      .print-page { display: block !important; }
+    .input-form {
+      max-width: 850px;
+      margin: 0 auto 30px auto;
+      background: #ffffff;
+      padding: 25px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .print-page { display: none; background: white; font-family: "Calibri", sans-serif; font-size: 12px; line-height: 1.3; }
-    .sheet-table { width: 100%; border-collapse: collapse; margin-top: 5px; }
-    .sheet-table th, .sheet-table td { border: 1px solid #000; padding: 5px; vertical-align: top; }
-    .header-logo { font-size: 24px; font-weight: bold; color: #e67e22; text-align: right; }
-    .header-logo span { color: #007bff; }
-    .title-box { text-align: center; font-weight: bold; font-size: 16px; background-color: #f0f0f0; }
+    .input-form h2 { margin-top: 0; color: #0072bc; text-align: center; }
+    .form-row { display: flex; gap: 15px; margin-bottom: 12px; }
+    .form-group { flex: 1; }
+    label { display: block; font-weight: bold; margin-bottom: 4px; font-size: 13px; }
+    input[type="text"], textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; }
+    textarea { resize: vertical; }
+    button { width: 100%; background-color: #0072bc; color: white; border: none; padding: 12px; font-size: 16px; font-weight: bold; border-radius: 4px; cursor: pointer; margin-top: 10px; }
+    button:hover { background-color: #00568c; }
+
+    /* DOCX BİREBİR YAZDIRMA ŞABLONU */
+    .sheet {
+      width: 210mm;
+      min-height: 297mm;
+      padding: 15mm;
+      margin: 0 auto;
+      background: #ffffff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      font-size: 13px;
+      color: #000;
+    }
+    
+    table.report-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 5px;
+    }
+    table.report-table td, table.report-table th {
+      border: 1px solid #000;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+    
+    /* V-BAUMARKT Logo Stili */
+    .logo-text {
+      font-weight: 900;
+      font-size: 24px;
+      letter-spacing: -1px;
+      display: inline-block;
+    }
+    .logo-v { color: #0072bc; }
+    .logo-dash { color: #0072bc; }
+    .logo-rest { color: #f37021; }
+
+    .header-info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 10px;
+    }
+    .header-info-table td {
+      padding: 3px 0;
+    }
+
+    .footer-signatures {
+      margin-top: 30px;
+      width: 100%;
+    }
+    .sig-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .sig-table td {
+      border: none !important;
+      padding-top: 20px;
+    }
+    .sig-line {
+      border-top: 1px solid #000;
+      width: 80%;
+      margin-top: 40px;
+      text-align: center;
+      font-size: 11px;
+    }
+
+    @media print {
+      body { background: none; padding: 0; }
+      .no-print { display: none !important; }
+      .sheet { box-shadow: none; margin: 0; width: 100%; padding: 0; }
+    }
   </style>
 </head>
 <body>
 
-<div class="form-container">
-  <h2>V-Baumarkt Berichtsheft</h2>
-  
-  <div class="row">
-    <div class="col">
-      <label>Name:</label>
-      <input type="text" id="in_name" value="Panahi, Sohail">
+  <!-- INPUT FORMU (Ekranda görünür, baskıda görünmez) -->
+  <div class="input-form no-print">
+    <h2>Ausbildungsnachweis Bearbeiten</h2>
+    
+    <div class="form-row">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="in_name" value="Panahi, Sohail">
+      </div>
+      <div class="form-group">
+        <label>Ausbildungsjahr:</label>
+        <input type="text" id="in_jahr" value="">
+      </div>
+      <div class="form-group">
+        <label>Nachweis Nr.:</label>
+        <input type="text" id="in_nr" value="03">
+      </div>
+      <div class="form-group">
+        <label>Woche:</label>
+        <input type="text" id="in_woche" value="33">
+      </div>
     </div>
-    <div class="col">
-      <label>Ausbildungsnachweis Nr.:</label>
-      <input type="text" id="in_nr" placeholder="03">
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Vom:</label>
+        <input type="text" id="in_vom" value="17.08.26">
+      </div>
+      <div class="form-group">
+        <label>Bis:</label>
+        <input type="text" id="in_bis" value="22.08.26">
+      </div>
+      <div class="form-group">
+        <label>Ausbildungsabteilung:</label>
+        <input type="text" id="in_abteilung" value="Werkzeug">
+      </div>
     </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label>Betriebliche Tätigkeit:</label>
+      <textarea id="in_taetigkeit" rows="4">Waren eingeräumt
+Preis überprüft
+Lieferschein eintragen
+Schlüssel gemacht</textarea>
+    </div>
+
+    <div class="form-group" style="margin-bottom: 12px;">
+      <label>Beschreibung eines Arbeitsvorganges dieser Woche:</label>
+      <textarea id="in_beschreibung" rows="5">Lieferscheine 
+Ich habe einen Schlüssel nach einer Vorlage angefertigt.
+Zuerst habe ich den passenden Schlüsselrohling ausgewählt.
+Anschließend wurde der Rohling mit der entsprechenden Maschine bearbeitet.  
+Danach habe ich den Schlüssel kontrolliert und geprüft, ob er richtig passt und funktioniert.</textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Berufsschule (Themen des Unterrichts):</label>
+        <input type="text" id="in_schule" value="Schulferien">
+      </div>
+      <div class="form-group" style="max-width: 150px;">
+        <label>Gesamtstunden:</label>
+        <input type="text" id="in_std" value="40">
+      </div>
+    </div>
+
+    <button onclick="updateSheetAndPrint()">Nachweis Generieren & Drucken (PDF)</button>
   </div>
 
-  <div class="row">
-    <div class="col">
-      <label>Ausbildungsjahr:</label>
-      <input type="text" id="in_jahr" placeholder="1">
+  <!-- BİREBİR DOCX DÜZENİNDEKİ BELGE ŞABLONU -->
+  <div class="sheet" id="printSheet">
+    
+    <!-- Üst Başlık ve Logo -->
+    <table class="header-info-table">
+      <tr>
+        <td style="width: 55%;">
+          <strong>Name:</strong> <span id="out_name">Panahi, Sohail</span><br>
+          <strong>Ausbildungsjahr:</strong> <span id="out_jahr"></span><br>
+          <strong>Woche:</strong> <span id="out_woche">33</span> &nbsp;&nbsp;&nbsp; 
+          <strong>vom:</strong> <span id="out_vom">17.08.26</span> 
+          <strong>bis:</strong> <span id="out_bis">22.08.26</span>
+        </td>
+        <td style="width: 45%; text-align: right; vertical-align: top;">
+          <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px;">
+            Ausbildungsnachweis Nr. <span id="out_nr">03</span>
+          </div>
+          <div class="logo-text">
+            <span class="logo-v">V</span><span class="logo-dash">-</span><span class="logo-rest">BAUMARKT</span>
+          </div>
+          <div style="font-size: 10px; color: #333; margin-top: 2px;">
+            V-Baumarkt II GmbH & Co.KG<br>
+            Füssen | Hiebelerstr. 55
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="padding-top: 8px;">
+          <strong>Ausbildungsabteilung:</strong> <span id="out_abteilung">Werkzeug</span>
+        </td>
+      </tr>
+    </table>
+
+    <!-- Ana Tablo -->
+    <table class="report-table">
+      <thead>
+        <tr style="background-color: #f2f2f2;">
+          <th style="text-align: left;">Betriebliche Tätigkeit <span style="font-size: 10px; font-weight: normal;">(bitte Ausbildungsverlauf mit der zeitlichen und sachlichen Gliederung abgleichen)</span></th>
+          <th style="width: 50px; text-align: center;">Std.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="height: 160px;">
+            <div id="out_taetigkeit" style="white-space: pre-line;"></div>
+          </td>
+          <td></td>
+        </tr>
+        <tr style="background-color: #f2f2f2;">
+          <th colspan="2" style="text-align: left;">Beschreibung eines Arbeitsvorganges dieser Woche:</th>
+        </tr>
+        <tr>
+          <td colspan="2" style="height: 180px;">
+            <div id="out_beschreibung" style="white-space: pre-line;"></div>
+          </td>
+        </tr>
+        <tr style="background-color: #f2f2f2;">
+          <th colspan="2" style="text-align: left;">Berufsschule (Themen des Unterrichts):</th>
+        </tr>
+        <tr>
+          <td colspan="2" style="height: 60px;">
+            <div id="out_schule"></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="text-align: right; font-weight: bold;">Gesamtstunden:</td>
+          <td style="text-align: center; font-weight: bold;" id="out_std">40</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Alt İmza Alanı -->
+    <div class="footer-signatures">
+      <table class="sig-table">
+        <tr>
+          <td style="width: 15%; font-weight: bold; vertical-align: bottom;">
+            Für die<br>Richtigkeit
+          </td>
+          <td style="width: 425%;">
+            <div class="sig-line">Datum / Auszubildender</div>
+          </td>
+          <td style="width: 42.5%;">
+            <div class="sig-line">Datum / Ausbilder</div>
+          </td>
+        </tr>
+      </table>
     </div>
-    <div class="col">
-      <label>Woche:</label>
-      <input type="text" id="in_woche" placeholder="33">
-    </div>
+
   </div>
 
-  <div class="row">
-    <div class="col">
-      <label>Vom:</label>
-      <input type="text" id="in_vom" placeholder="17.08.26">
-    </div>
-    <div class="col">
-      <label>Bis:</label>
-      <input type="text" id="in_bis" placeholder="22.08.26">
-    </div>
-  </div>
+  <script>
+    function updateSheetAndPrint() {
+      // Formdaki verileri belgeye aktar
+      document.getElementById('out_name').innerText = document.getElementById('in_name').value;
+      document.getElementById('out_jahr').innerText = document.getElementById('in_jahr').value;
+      document.getElementById('out_nr').innerText = document.getElementById('in_nr').value;
+      document.getElementById('out_woche').innerText = document.getElementById('in_woche').value;
+      document.getElementById('out_vom').innerText = document.getElementById('in_vom').value;
+      document.getElementById('out_bis').innerText = document.getElementById('in_bis').value;
+      document.getElementById('out_abteilung').innerText = document.getElementById('in_abteilung').value;
+      document.getElementById('out_std').innerText = document.getElementById('in_std').value;
+      
+      document.getElementById('out_taetigkeit').innerText = document.getElementById('in_taetigkeit').value;
+      document.getElementById('out_beschreibung').innerText = document.getElementById('in_beschreibung').value;
+      document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
 
-  <label>Ausbildungsabteilung:</label>
-  <input type="text" id="in_abt" value="Werkzeug">
+      // Doğrudan yazdırma pencerisini aç
+      window.print();
+    }
 
-  <label>Betriebliche Tätigkeit:</label>
-  <textarea id="in_taetigkeit" rows="4" placeholder="- Waren eingeräumt&#10;- Preis überprüft..."></textarea>
-
-  <label>Beschreibung eines Arbeitsvorganges dieser Woche:</label>
-  <textarea id="in_beschreibung" rows="5" placeholder="Ich habe einen Schlüssel nach einer Vorlage angefertigt..."></textarea>
-
-  <label>Berufsschule (Themen des Unterrichts):</label>
-  <textarea id="in_schule" rows="2" placeholder="Schulferien"></textarea>
-
-  <div class="row">
-    <div class="col">
-      <label>Gesamtstunden:</label>
-      <input type="text" id="in_std" value="40">
-    </div>
-  </div>
-
-  <button onclick="printSheet()">DRUCKEN / ALS PDF SPEICHERN</button>
-</div>
-
-<!-- DRUCK TEMPLATE (V-BAUMARKT BİREBİR ŞABLON) -->
-<div id="printArea" class="print-page">
-  <table class="sheet-table">
-    <tr>
-      <td colspan="2">
-        <b>Name:</b> <span id="out_name"></span><br>
-        <b>Ausbildungsjahr:</b> <span id="out_jahr"></span>
-      </td>
-      <td colspan="2" class="title-box">
-        Ausbildungsnachweis Nr. <span id="out_nr"></span>
-      </td>
-      <td colspan="2" class="header-logo">
-        <span>V-</span>BAUMARKT
-      </td>
-    </tr>
-    <tr>
-      <td colspan="2">
-        <b>Woche:</b> <span id="out_woche"></span>
-      </td>
-      <td colspan="2">
-        <b>vom:</b> <span id="out_vom"></span> <b>bis:</b> <span id="out_bis"></span>
-      </td>
-      <td colspan="2">
-        <b>Ausbildungsabteilung:</b><br>
-        V-Baumarkt II GmbH & Co.KG Füssen<br>
-        <span id="out_abt"></span>
-      </td>
-    </tr>
-    <tr>
-      <td colspan="5" style="background-color: #f0f0f0;"><b>Betriebliche Tätigkeit:</b></td>
-      <td style="width: 50px; background-color: #f0f0f0;"><b>Std.</b></td>
-    </tr>
-    <tr style="height: 120px;">
-      <td colspan="5" id="out_taetigkeit" style="white-space: pre-line;"></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td colspan="6" style="background-color: #f0f0f0;"><b>Beschreibung eines Arbeitsvorganges dieser Woche:</b></td>
-    </tr>
-    <tr style="height: 150px;">
-      <td colspan="6" id="out_beschreibung" style="white-space: pre-line;"></td>
-    </tr>
-    <tr>
-      <td colspan="6" style="background-color: #f0f0f0;"><b>Berufsschule (Themen des Unterrichts):</b></td>
-    </tr>
-    <tr style="height: 60px;">
-      <td colspan="5" id="out_schule" style="white-space: pre-line;"></td>
-      <td><b>Gesamtstunden:</b><br><span id="out_std"></span></td>
-    </tr>
-    <tr>
-      <td colspan="2">Für die Richtigkeit</td>
-      <td><b>Datum</b></td>
-      <td><b>Auszubildender</b></td>
-      <td><b>Datum</b></td>
-      <td><b>Ausbilder</b></td>
-    </tr>
-    <tr style="height: 40px;">
-      <td colspan="2"></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-  </table>
-</div>
-
-<script>
-  function printSheet() {
-    // Form verilerini oku ve tabloya yerleştir
-    document.getElementById('out_name').innerText = document.getElementById('in_name').value;
-    document.getElementById('out_nr').innerText = document.getElementById('in_nr').value;
-    document.getElementById('out_jahr').innerText = document.getElementById('in_jahr').value;
-    document.getElementById('out_woche').innerText = document.getElementById('in_woche').value;
-    document.getElementById('out_vom').innerText = document.getElementById('in_vom').value;
-    document.getElementById('out_bis').innerText = document.getElementById('in_bis').value;
-    document.getElementById('out_abt').innerText = document.getElementById('in_abt').value;
-    document.getElementById('out_taetigkeit').innerText = document.getElementById('in_taetigkeit').value;
-    document.getElementById('out_beschreibung').innerText = document.getElementById('in_beschreibung').value;
-    document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
-    document.getElementById('out_std').innerText = document.getElementById('in_std').value;
-
-    // Sayfayı yazdır / PDF olarak kaydet
-    window.print();
-  }
-</script>
+    // Sayfa açıldığında varsayılan verileri doldur
+    window.onload = function() {
+      document.getElementById('out_taetigkeit').innerText = document.getElementById('in_taetigkeit').value;
+      document.getElementById('out_beschreibung').innerText = document.getElementById('in_beschreibung').value;
+      document.getElementById('out_schule').innerText = document.getElementById('in_schule').value;
+    };
+  </script>
 
 </body>
 </html>
